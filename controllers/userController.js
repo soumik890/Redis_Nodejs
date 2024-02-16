@@ -92,6 +92,22 @@ export const update = async (req, res) => {
         },
       }
     );
+
+    const updatedResult = await clientConnection()
+      .find({
+        _id: new ObjectId(req.params.id),
+      })
+      .toArray();
+
+    const userEmail = updatedResult[0]?.email;
+
+    await client.set(
+      userEmail,
+      JSON.stringify(updatedResult),
+      "EX",
+      60 * 60 * 24
+    );
+
     console.log("updated documents =>", result);
     res.status(201).send(result);
   } catch (error) {
